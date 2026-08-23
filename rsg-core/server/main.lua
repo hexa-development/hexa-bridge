@@ -197,6 +197,19 @@ local function wrapPlayer(hp)
         F.SetMetaData('jobrep', jobrep)
     end
 
+    ---------------------------------------------------------------
+    -- ตัวผู้เล่นของ hexa แขวนเมธอดไว้ทั้งสองแบบ: แบบแบน Player.AddItem() และ
+    -- แบบซ้อน Player.Functions.AddItem() (มิเรอร์ให้เองด้วย __newindex ใน
+    -- hexa_core/server/player.lua) ตัวห่อนี้เคยมีแต่แบบซ้อน สคริปต์ที่เขียน
+    -- แบบแบนจึงเจอ nil ทั้งที่ตัวจริงมีเมธอดนั้นอยู่ — ยกขึ้นมาให้ครบทั้งสองแบบ
+    -- ต้องทำท้ายสุด หลัง override ด้านบนเขียน fn เสร็จแล้ว จะได้ยกตัวที่แปลง
+    -- signature แล้วขึ้นมา ไม่ใช่ตัวดิบของ hexa
+    ---------------------------------------------------------------
+    for name, f in pairs(fn) do
+        -- ห้ามทับ PlayerData / Offline / Functions ที่เป็นโครงของตัวห่อเอง
+        if self[name] == nil then self[name] = f end
+    end
+
     return self
 end
 
